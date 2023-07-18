@@ -6,8 +6,7 @@
   "scripts": {
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
-    "deploy-ropsten": "graph deploy baofinance/bao-markets-ropsten-subgraph --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-mainnet": "graph deploy baofinance/bao-markets-subgraph --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-mainnet": "graph deploy --studio baousd-vault-subgraph",
     "watch-local": "graph deploy compound-finance/compound-v2 --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",
     "prettier": "./node_modules/.bin/prettier —-write '**/*.ts'"
   },
