@@ -1,0 +1,37 @@
+{
+  "name": "compound-v2",
+  "version": "1.0.0",
+  "repository": "https://github.com/baofinance/bao-markets-subgraph",
+  "license": "MIT",
+  "scripts": {
+    "codegen": "graph codegen --output-dir src/types/",
+    "build": "graph build",
+    "deploy-ropsten": "graph deploy baofinance/bao-markets-ropsten-subgraph --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-mainnet": "graph deploy baofinance/bao-markets-subgraph --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "watch-local": "graph deploy compound-finance/compound-v2 --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",
+    "prettier": "./node_modules/.bin/prettier —-write '**/*.ts'"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.52.0",
+    "@graphprotocol/graph-ts": "^0.31.0",
+    "@typescript-eslint/eslint-plugin": "^2.0.0",
+    "@typescript-eslint/parser": "^2.0.0",
+    "eslint": "^6.2.2",
+    "eslint-config-prettier": "^6.1.0",
+    "prettier": "^1.18.2",
+    "typescript": "^3.5.2",
+    "husky": "^3.0.5",
+    "lint-staged": "^9.2.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,md}": [
+      "prettier --write --config ./.prettierrc",
+      "git add"
+    ]
+  }
+}
