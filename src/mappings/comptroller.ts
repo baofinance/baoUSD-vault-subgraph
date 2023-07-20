@@ -1,5 +1,6 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
+import { log } from '@graphprotocol/graph-ts'
 import {
   MarketEntered,
   MarketExited,
@@ -10,18 +11,19 @@ import {
   NewPriceOracle,
 } from '../types/Comptroller/Comptroller'
 
-import { Market, Comptroller } from '../types/schema'
+import { Comptroller, Market } from '../types/schema'
 import { mantissaFactorBD, updateCommonCTokenStats } from './helpers'
+import { createMarket } from './markets'
 
 export function handleMarketEntered(event: MarketEntered): void {
-  let market = Market.load(event.params.cToken.toHexString())
-  if (market === null) {
-    // handle the case when market is null
-    // for example, you can log an error or throw an exception
-    throw new Error('Market not found')
+  let marketID = event.params.cToken.toHexString()
+  let accountID = event.params.account.toHex()
+
+  let market = Market.load(marketID)
+  if (market == null) {
+    market = createMarket(marketID)
   }
 
-  let accountID = event.params.account.toHex()
   let cTokenStats = updateCommonCTokenStats(
     market.id,
     market.symbol,
@@ -30,22 +32,18 @@ export function handleMarketEntered(event: MarketEntered): void {
     event.block.timestamp.toI32(),
     event.block.number.toI32(),
   )
-  if (cTokenStats === null) {
-    // handle the case when cTokenStats is null
-    // for example, you can log an error or throw an exception
-    throw new Error('CTokenStats not found')
-  }
-
   cTokenStats.enteredMarket = true
   cTokenStats.save()
+
+  market.numberOfSuppliers = market.numberOfSuppliers + 1
+  market.save()
 }
 
 export function handleMarketExited(event: MarketExited): void {
   let market = Market.load(event.params.cToken.toHexString())
-  if (market === null) {
-    // handle the case when market is null
-    // for example, you can log an error or throw an exception
-    throw new Error('Market not found')
+  if (market == null) {
+    log.error('Market not found', [])
+    return
   }
 
   let accountID = event.params.account.toHex()
@@ -58,10 +56,9 @@ export function handleMarketExited(event: MarketExited): void {
     event.block.number.toI32(),
   )
 
-  if (cTokenStats === null) {
-    // handle the case when cTokenStats is null
-    // for example, you can log an error or throw an exception
-    throw new Error('CTokenStats not found')
+  if (cTokenStats == null) {
+    log.error('CTokenStats not found', [])
+    return
   }
 
   cTokenStats.enteredMarket = false
