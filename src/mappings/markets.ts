@@ -93,21 +93,25 @@ export function createMarket(marketAddress: string): Market {
     // It is all other CERC20 contracts
   } else {
     market = new Market(marketAddress)
-    market.underlyingAddress = contract.underlying()
-    let underlyingContract = ERC20.bind(market.underlyingAddress as Address)
-    market.underlyingDecimals = underlyingContract.decimals()
-    if (market.underlyingAddress.toHexString() != daiAddress) {
-      market.underlyingName = underlyingContract.name()
-      market.underlyingSymbol = underlyingContract.symbol()
+    let underlyingResult = contract.try_underlying()
+    if (!underlyingResult.reverted) {
+      market.underlyingAddress = underlyingResult.value
+      let underlyingContract = ERC20.bind(changetype<Address>(market.underlyingAddress))
+      market.underlyingDecimals = underlyingContract.decimals()
+      if (market.underlyingAddress.toHexString() != daiAddress) {
+        market.underlyingName = underlyingContract.name()
+        market.underlyingSymbol = underlyingContract.symbol()
+      } else {
+        market.underlyingName = 'Dai Stablecoin v1.0 (DAI)'
+        market.underlyingSymbol = 'DAI'
+      }
+      if (marketAddress == cUSDCAddress) {
+        market.underlyingPriceUSD = BigDecimal.fromString('1')
+      }
     } else {
-      market.underlyingName = 'Dai Stablecoin v1.0 (DAI)'
-      market.underlyingSymbol = 'DAI'
-    }
-    if (marketAddress == cUSDCAddress) {
-      market.underlyingPriceUSD = BigDecimal.fromString('1')
+      log.info('***CALL REVERTED*** : Comptroller createMarket() reverted', [])
     }
   }
-
   market.borrowRate = zeroBD
   market.cash = zeroBD
   market.collateralFactor = zeroBD
@@ -115,12 +119,12 @@ export function createMarket(marketAddress: string): Market {
   market.interestRateModelAddress = Address.fromString(
     '0x0000000000000000000000000000000000000000',
   )
-  market.name = contract.name()
+  market.name = contract.try_name().value
   market.numberOfBorrowers = 0
   market.numberOfSuppliers = 0
   market.reserves = zeroBD
   market.supplyRate = zeroBD
-  market.symbol = contract.symbol()
+  market.symbol = contract.try_symbol().value
   market.totalBorrows = zeroBD
   market.totalSupply = zeroBD
   market.underlyingPrice = zeroBD
@@ -172,7 +176,7 @@ export function updateMarket(
       }
     }
 
-    market.accrualBlockNumber = contract.accrualBlockNumber().toI32()
+    market.accrualBlockNumber = contract.try_accrualBlockNumber().value.toI32()
     market.blockTimestamp = blockTimestamp
     market.totalSupply = contract
       .totalSupply()
