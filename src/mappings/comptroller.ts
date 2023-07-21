@@ -31,8 +31,6 @@ export function handleMarketEntered(event: MarketEntered): void {
     cTokenStats.save()
   } else {
     market = new Market(event.params.cToken.toHexString()) // Create a new market entity
-    market.symbol = 'Unknown' // Set an initial default value for the symbol
-    market.borrowRate = BigDecimal.fromString('0') // Set the borrowRate to a default value
     market.save()
   }
 }
