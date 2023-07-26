@@ -1,18 +1,17 @@
 {
-  "name": "compound-v2",
+  "name": "baousd-vault-subgraph",
   "version": "1.0.0",
-  "repository": "https://github.com/baofinance/bao-markets-subgraph",
+  "repository": "https://github.com/baofinance/baoUSD-vault-subgraph",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen --output-dir src/types/",
-    "build": "graph build",
-    "deploy-mainnet": "graph deploy --studio baousd-vault-subgraph",
-    "watch-local": "graph deploy compound-finance/compound-v2 --watch --debug --node http://127.0.0.1:8020/ --ipfs http://localhost:5001",
+    "build": "graph build --ipfs https://api.staging.thegraph.com/ipfs/ ",
+    "deploy": "graph deploy baofinance/baousd-vault-subgraph --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token 3af8d0582a9a42e0ac0c4b4d5ada8edd",
     "prettier": "./node_modules/.bin/prettier —-write '**/*.ts'"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.52.0",
-    "@graphprotocol/graph-ts": "^0.31.0",
+    "@graphprotocol/graph-cli": "0.18.0",
+    "@graphprotocol/graph-ts": "0.18.0",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.2",
